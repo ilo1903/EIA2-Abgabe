@@ -1,0 +1,99 @@
+/* Basis-Styling für die Anwendung */
+body {
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive; /* Comic Sans Schriftart */
+    background-color: black; /* Schwarzer Hintergrund */
+    color: white; /* Weißer Text */
+    overflow: hidden; /* Keine Scrollbars anzeigen */
+}
+
+/* Canvas für die Feuerwerksanimation */
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Volle Breite */
+    height: 100vh; /* Volle Höhe */
+    background-color: black; /* Schwarzer Hintergrund */
+}
+
+/* Kontrollbereich */
+.controls {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%); /* Zentrieren */
+    background: rgba(20, 20, 20, 0.85); /* Halbtransparenter Hintergrund */
+    padding: 15px 25px;
+    border-radius: 12px; /* Abgerundete Ecken */
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Weicher Schatten */
+}
+
+/* Überschrift */
+h1 {
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 28px;
+    margin-bottom: 5px;
+    color: #FFD700; /* Goldene Farbe */
+}
+
+/* Beschreibungstext */
+p {
+    font-size: 18px;
+    color: #FFD700; /* Goldene Farbe */
+}
+
+/* Einstellungen für die Raketen */
+.settings {
+    display: flex;
+    flex-direction: column; /* Spaltenlayout */
+    align-items: center; /* Zentriert */
+    gap: 5px; /* Abstand zwischen Elementen */
+    margin-bottom: 10px;
+}
+
+/* Styling für Labels */
+label {
+    font-size: 18px;
+}
+
+/* Styling für Schieberegler */
+input[type="range"] {
+    width: 150px;
+    cursor: pointer;
+}
+
+/* Styling für Farbauswahl */
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Button-Styling */
+button {
+    background-color: #ff4500; /* Orange Farbe */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px; /* Abgerundete Ecken */
+    font-size: 16px;
+    font-family: 'Comic Sans MS', cursive;
+    transition: 0.3s; /* Weiche Übergänge */
+}
+
+/* Hover-Effekt für Buttons */
+button:hover {
+    background-color: #ff6347; /* Helleres Orange */
+    transform: scale(1.1); /* Vergrößern */
+}
