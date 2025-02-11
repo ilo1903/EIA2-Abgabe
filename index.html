@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtuelles Feuerwerk</title>
-    <!-- CSS-Datei für Styling einbinden -->
+    <title>Ilonas Feuerwerk_Welt </title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-
+   
 </head>
 <body>
-    <!-- Hauptkontrollbereich -->
+    <!-- Kontrollbereich -->
     <div class="controls">
-        <h1>Virtuelles Feuerwerk</h1>
-        <p>Erstelle deine eigene Rakete und tippe/klicke auf den Himmel, um sie zu starten!</p>
+        <h1>Ilonas Feuerwerk-Welt</h1>
+        <p>Erstelle deine eigene Rakete und zünde sie per Mausklick!</p>
 
         <!-- Raketen-Einstellungen -->
         <div class="settings">
             <label for="color">🎨 Farbe:</label>
-            <!-- Farbwahl-Input -->
             <input type="color" id="color" value="#ff0000">
 
             <label for="size">💥 Größe:</label>
-            <!-- Schieberegler für die Größe -->
             <input type="range" id="size" min="5" max="50" value="20">
 
             <label for="particles">✨ Partikel:</label>
-            <!-- Schieberegler für die Anzahl der Partikel -->
             <input type="range" id="particles" min="10" max="200" value="100">
         </div>
 
-        <!-- Buttons für Speichern und Laden -->
+        <!-- Buttons -->
         <div class="buttons">
             <button id="saveRocket">💾 Rakete speichern</button>
             <button id="loadRockets">📂 Gespeicherte Raketen</button>
@@ -39,7 +36,6 @@
     <!-- Canvas für das Feuerwerk -->
     <canvas id="fireworkCanvas"></canvas>
 
-    <!-- TypeScript/JavaScript-Datei einbinden -->
     <script src="script.js"></script>
 </body>
 </html>

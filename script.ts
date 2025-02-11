@@ -1,154 +1,146 @@
 // **Canvas-Element initialisieren**
-// Das `canvas`-Element ist eine HTML-Zeichenfläche, auf der das Feuerwerk gezeichnet wird.
-// Es wird über die ID "fireworkCanvas" aus dem HTML-Dokument referenziert.
+// Das `canvas`-Element ist eine Zeichenfläche, auf der das Feuerwerk dargestellt wird.
 const canvas = document.getElementById("fireworkCanvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d")!; // Zeichenkontext für 2D-Zeichnungen
 
-// Der Zeichenkontext `ctx` ist eine API für das Zeichnen von 2D-Grafiken.
-// Mit `ctx` erstellen wir Formen, Farben und Animationen.
-const ctx = canvas.getContext("2d")!;
-
-// Die Größe des Canvas wird auf die Fenstergröße angepasst,
-// damit das Feuerwerk den gesamten Bildschirm einnimmt.
+// Setzt die Größe des Canvas auf die gesamte Bildschirmbreite und -höhe
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // **HTML-Steuerelemente abrufen**
-// Diese Steuerelemente ermöglichen den Nutzer:innen, die Eigenschaften der Rakete (Farbe, Größe, Partikelanzahl) anzupassen.
+// Diese Elemente ermöglichen die Konfiguration der Raketen
 const colorPicker = document.getElementById("color") as HTMLInputElement; // Farbwahl-Input
 const sizeSlider = document.getElementById("size") as HTMLInputElement; // Schieberegler für die Größe
-const particlesSlider = document.getElementById("particles") as HTMLInputElement; // Schieberegler für die Anzahl der Partikel
-const saveButton = document.getElementById("saveRocket") as HTMLButtonElement; // Button zum Speichern der Rakete
-const loadButton = document.getElementById("loadRockets") as HTMLButtonElement; // Button zum Laden gespeicherter Raketen
+const particlesSlider = document.getElementById("particles") as HTMLInputElement; // Anzahl der Partikel
+const saveButton = document.getElementById("saveRocket") as HTMLButtonElement; // Button zum Speichern
+const loadButton = document.getElementById("loadRockets") as HTMLButtonElement; // Button zum Laden
 
-// **Server-URL**
-// Der Server wird verwendet, um Raketen zu speichern und abzurufen. 
-// Hier wird die URL deines MongoDB-Servers festgelegt.
-const SERVER_URL = "https://7c8644f9-f81d-49cd-980b-1883574694b6.fr.bw-cloud-instance.org/ibe46450";
+// **Server-URL für die Datenbank**
+const SERVER_URL = "https://7c8644f9-f81d-49cd-980b-1883574694b6.fr.bw-cloud-instance.org/ibe46450/mingidb.php";
 
 // **Liste der aktiven Explosionen**
-// Diese Liste speichert alle Explosionen, die auf dem Bildschirm dargestellt werden.
-// Jede Explosion ist eine Liste von Partikeln.
-let explosions: Particle[][] = [];
+let explosions: Particle[][] = []; // Array speichert aktive Explosionen
 
 // **Definition der Raketenstruktur**
-// Ein Interface beschreibt, welche Eigenschaften eine Rakete hat.
-// - `color`: Die Farbe der Explosion.
-// - `size`: Die Größe der Explosion.
-// - `particles`: Die Anzahl der Partikel in der Explosion.
 interface Rocket {
     color: string; // Farbe der Rakete
     size: number; // Größe der Rakete
-    particles: number; // Anzahl der Partikel
+    particles: number; // Anzahl der Partikel in der Explosion
 }
 
 // **Liste der gespeicherten Raketen**
-// Diese Liste speichert die Raketen, die Nutzer:innen erstellt und gespeichert haben.
-// Sie kann später auf dem Server gespeichert oder von dort abgerufen werden.
-let savedRockets: Rocket[] = [];
+let savedRockets: Rocket[] = []; // Hier werden gespeicherte Raketen abgelegt
 
 // **Partikel-Klasse**
-// Ein Partikel ist ein kleiner Punkt, der Teil einer Explosion ist.
-// Die Klasse beschreibt, wie ein Partikel aussieht und sich verhält.
+// Jedes Partikel ist eine kleine "Explosion" in der Feuerwerksanimation
 class Particle {
     x: number; // X-Koordinate des Partikels
     y: number; // Y-Koordinate des Partikels
-    size: number; // Größe des Partikels (Radius)
+    size: number; // Größe des Partikels
     color: string; // Farbe des Partikels
-    speedX: number; // Horizontale Geschwindigkeit des Partikels
-    speedY: number; // Vertikale Geschwindigkeit des Partikels
-    lifetime: number; // Lebensdauer des Partikels (wie lange es sichtbar ist)
+    speedX: number; // Geschwindigkeit in X-Richtung
+    speedY: number; // Geschwindigkeit in Y-Richtung
+    lifetime: number; // Wie lange das Partikel sichtbar bleibt
 
     constructor(x: number, y: number, color: string, size: number) {
-        this.x = x; // Startposition auf der X-Achse
-        this.y = y; // Startposition auf der Y-Achse
-        this.size = size; // Anfangsgröße des Partikels
-        this.color = color; // Farbe des Partikels
-        this.speedX = (Math.random() - 0.5) * 8; // Zufällige Geschwindigkeit in X-Richtung
-        this.speedY = (Math.random() - 0.5) * 8; // Zufällige Geschwindigkeit in Y-Richtung
-        this.lifetime = 100; // Partikel verschwindet nach 100 Frames
+        this.x = x; // Anfangsposition
+        this.y = y; 
+        this.size = size; // Anfangsgröße
+        this.color = color; // Farbe
+
+        // Geschwindigkeit zufällig verteilen (-4 bis +4 Pixel pro Frame)
+        this.speedX = (Math.random() - 0.5) * 8;
+        this.speedY = (Math.random() - 0.5) * 8;
+
+        // Partikel verschwindet nach 100 Frames
+        this.lifetime = 100;
     }
 
-    // **Bewegung und Lebenszeit aktualisieren**
+    // **Bewegung und Lebensdauer aktualisieren**
     update() {
-        this.x += this.speedX; // X-Position basierend auf der Geschwindigkeit anpassen
-        this.y += this.speedY; // Y-Position basierend auf der Geschwindigkeit anpassen
-        this.size *= 0.98; // Größe des Partikels langsam verringern
-        this.lifetime -= 1; // Lebenszeit reduzieren
+        this.x += this.speedX; // Bewegung in X-Richtung
+        this.y += this.speedY; // Bewegung in Y-Richtung
+        this.size *= 0.98; // Partikel wird kleiner
+        this.lifetime -= 1; // Countdown für das Partikel
     }
 
-    // **Partikel zeichnen**
+    // **Partikel auf dem Canvas zeichnen**
     draw() {
-        ctx.globalAlpha = this.lifetime / 100; // Transparenz basierend auf verbleibender Lebenszeit einstellen
-        ctx.fillStyle = this.color; // Farbe des Partikels setzen
+        ctx.globalAlpha = this.lifetime / 100; // Transparenz nimmt mit der Lebensdauer ab
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); // Kreis zeichnen
         ctx.fill();
-        ctx.globalAlpha = 1; // Transparenz zurücksetzen
+        ctx.globalAlpha = 1;
     }
 }
 
 // **Explosion erstellen**
-// Diese Funktion erzeugt eine Explosion an einer bestimmten Position (`x`, `y`) mit den Eigenschaften der Rakete.
 function createExplosion(x: number, y: number, rocket: Rocket) {
-    let particles: Particle[] = []; // Liste für die Partikel der Explosion
+    let particles: Particle[] = [];
+    
+    // Erstelle Partikel basierend auf der Anzahl, die die Rakete vorgibt
     for (let i = 0; i < rocket.particles; i++) {
-        // Jedes Partikel wird mit den Raketenwerten erstellt
         particles.push(new Particle(x, y, rocket.color, rocket.size / 5));
     }
-    explosions.push(particles); // Die Explosion wird zur Liste der Explosionen hinzugefügt
+    
+    explosions.push(particles); // Explosion zur Liste hinzufügen
 }
 
 // **Rakete auf dem Server speichern**
-// Diese Funktion sendet die Rakete an den Server, um sie dort zu speichern.
 async function saveRocketToServer(rocket: Rocket) {
     try {
-        const response = await fetch(`${SERVER_URL}/rockets`, {
-            method: "POST", // HTTP-Methode POST (zum Senden von Daten)
-            headers: {
-                "Content-Type": "application/json", // Daten werden als JSON gesendet
-            },
-            body: JSON.stringify(rocket), // Raketenobjekt wird in einen JSON-String umgewandelt
-        });
+        let query: URLSearchParams = new URLSearchParams();
+        query.set("command", "insert"); // Speichern-Befehl
+        query.set("collection", "rockets"); // Speichert die Rakete in der Datenbank-Kollektion "rockets"
+        query.set("data", JSON.stringify(rocket)); // Raketen-Daten in JSON umwandeln
+
+        const response = await fetch(SERVER_URL + "?" + query.toString());
+        const responseText = await response.text();
 
         if (response.ok) {
-            alert("Rakete erfolgreich auf dem Server gespeichert!");
+            alert("✅ Rakete erfolgreich auf dem Server gespeichert!");
         } else {
-            alert("Fehler beim Speichern der Rakete auf dem Server.");
+            alert("⚠️ Fehler beim Speichern der Rakete: " + responseText);
         }
     } catch (error) {
-        console.error("Serverfehler:", error);
-        alert("Konnte keine Verbindung zum Server herstellen.");
+        console.error("❌ Serverfehler:", error);
+        alert("❌ Konnte keine Verbindung zum Server herstellen.");
     }
 }
 
 // **Raketen vom Server abrufen**
-// Diese Funktion lädt alle gespeicherten Raketen vom Server.
 async function loadRocketsFromServer() {
     try {
-        const response = await fetch(`${SERVER_URL}/rockets`); // GET-Anfrage an den Server
+        let query: URLSearchParams = new URLSearchParams();
+        query.set("command", "find"); // Abruf-Befehl
+        query.set("collection", "rockets"); // Datenbank-Kollektion "rockets"
+        query.set("data", "{}"); // Holt alle Raketen
+
+        const response = await fetch(SERVER_URL + "?" + query.toString());
+        const responseText = await response.text();
+
         if (response.ok) {
-            const data = await response.json(); // Serverantwort in ein JavaScript-Objekt umwandeln
-            savedRockets = data; // Gespeicherte Raketen aktualisieren
-            alert(`Geladene Raketen: ${savedRockets.length}`);
+            savedRockets = JSON.parse(responseText); // Konvertiert die Antwort zu JSON
+            alert(`📂 Geladene Raketen: ${savedRockets.length}`);
         } else {
-            alert("Fehler beim Abrufen der Raketen vom Server.");
+            alert("⚠️ Fehler beim Abrufen der Raketen: " + responseText);
         }
     } catch (error) {
-        console.error("Serverfehler:", error);
-        alert("Konnte keine Verbindung zum Server herstellen.");
+        console.error("❌ Serverfehler:", error);
+        alert("❌ Konnte keine Verbindung zum Server herstellen.");
     }
 }
 
-// **Event: Klick auf den Canvas**
-// Diese Funktion wird aufgerufen, wenn Nutzer:innen auf den Canvas klicken.
+// **Event: Klick auf den Canvas -> Feuerwerk auslösen**
 canvas.addEventListener("click", (event) => {
     const rocket: Rocket = {
-        color: colorPicker.value, // Farbe aus dem Farbwähler
-        size: Number(sizeSlider.value), // Größe aus dem Schieberegler
-        particles: Number(particlesSlider.value), // Partikelanzahl aus dem Schieberegler
+        color: colorPicker.value, // Farbe aus der UI
+        size: Number(sizeSlider.value), // Größe aus der UI
+        particles: Number(particlesSlider.value), // Anzahl der Partikel aus der UI
     };
 
-    createExplosion(event.clientX, event.clientY, rocket); // Explosion an der geklickten Stelle erzeugen
+    createExplosion(event.clientX, event.clientY, rocket);
 });
 
 // **Speichern-Button-Event**
@@ -158,41 +150,37 @@ saveButton.addEventListener("click", () => {
         size: Number(sizeSlider.value),
         particles: Number(particlesSlider.value),
     };
-    saveRocketToServer(rocket); // Rakete auf dem Server speichern
+    saveRocketToServer(rocket);
 });
 
 // **Laden-Button-Event**
 loadButton.addEventListener("click", () => {
-    loadRocketsFromServer(); // Raketen vom Server laden
+    loadRocketsFromServer();
 });
 
-// **Animations-Loop**
-// Diese Funktion wird kontinuierlich aufgerufen, um Explosionen zu aktualisieren und zu zeichnen.
+// **Animations-Loop für das Feuerwerk**
 function animate() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.2)"; // Hintergrund halbtransparent übermalen
+    // Leichte Abdunklung für Nachzieheffekt
+    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Explosionen durchlaufen und aktualisieren
     explosions.forEach((particles, explosionIndex) => {
         particles.forEach((particle, particleIndex) => {
-            particle.update(); // Partikelposition und Lebenszeit aktualisieren
+            particle.update(); // Position aktualisieren
             particle.draw(); // Partikel zeichnen
 
-            // Entferne Partikel, wenn ihre Lebenszeit abgelaufen ist
             if (particle.lifetime <= 0) {
-                particles.splice(particleIndex, 1);
+                particles.splice(particleIndex, 1); // Lösche Partikel nach Ablauf der Lebenszeit
             }
         });
 
-        // Entferne Explosionen, wenn alle Partikel verschwunden sind
         if (particles.length === 0) {
-            explosions.splice(explosionIndex, 1);
+            explosions.splice(explosionIndex, 1); // Lösche Explosionen, wenn keine Partikel mehr vorhanden sind
         }
     });
 
-    requestAnimationFrame(animate); // Nächsten Frame anfordern
+    requestAnimationFrame(animate); // Nächster Frame wird gerendert
 }
 
 // **Animation starten**
-// Die Animations-Loop-Funktion wird gestartet, um kontinuierlich Explosionen darzustellen.
 animate();

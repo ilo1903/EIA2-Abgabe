@@ -1,0 +1,97 @@
+/* Basis-Styling */
+body {
+    margin: 0;
+    font-family: 'Comic Neue', Arial, sans-serif;
+    background-color: black;
+    color: white;
+    overflow: hidden;
+}
+
+/* Canvas für Feuerwerk */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Hintergrund hinter dem Steuerbereich */
+}
+
+/* Steuerungselemente */
+.controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(50, 50, 50, 0.9); /* Dunkler Hintergrund mit Transparenz */
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: white;
+    text-align: left;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Weicher Schatten */
+    z-index: 1; /* Über dem Canvas */
+}
+
+/* Überschrift */
+h1 {
+    font-family: 'Comic Neue', Arial, sans-serif;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #2eb1f3; /* Goldene Farbe */
+}
+
+/* Beschreibung */
+p {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #2eb1f3; /* Goldene Farbe */
+}
+
+/* Einstellungen für Raketen */
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Abstand zwischen Elementen */
+}
+
+label {
+    font-size: 14px;
+    color: white; /* Weißer Text */
+}
+
+/* Schieberegler */
+input[type="range"] {
+    width: 150px;
+    cursor: pointer;
+    accent-color: #ff4500;
+}
+
+/* Farbwähler */
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    gap: 10px; /* Abstand zwischen Buttons */
+}
+
+button {
+    background-color: #5033f0; /* Orange Farbe */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px; /* Abgerundete Ecken */
+    font-size: 14px;
+    font-family: 'Comic Neue', Arial, sans-serif;
+    transition: transform 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #5336d3; /* Helleres Orange */
+    transform: scale(1.1); /* Leichter Hover-Effekt */
+}
